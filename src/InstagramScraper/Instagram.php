@@ -60,6 +60,7 @@ class Instagram
             CacheManager::setDefaultConfig([
                 'path' => $sessionFolder,
                 'ignoreSymfonyNotice' => true,
+                'defaultTtl' => 7200, // 2h,
             ]);
             static::$instanceCache = CacheManager::getInstance('files');
         } else {
@@ -687,7 +688,9 @@ class Instagram
      */
     private static function parseCookies($headers)
     {
-        $rawCookies = isset($headers['Set-Cookie']) ? $headers['Set-Cookie'] : isset($headers['set-cookie']) ? $headers['set-cookie'] : [];
+        $rawCookies = isset($headers['Set-Cookie']) ?
+            $headers['Set-Cookie'] :
+            (isset($headers['set-cookie']) ? $headers['set-cookie'] : []);
         
         if (!is_array($rawCookies)) {
             $rawCookies = [$rawCookies];
@@ -715,7 +718,7 @@ class Instagram
         $cookies = $secure_cookies + $not_secure_cookies;
         
         if (isset($cookies['csrftoken'])) {
-            $this->userSession['csrftoken'] = $cookies['csrftoken'];
+            //$this->userSession['csrftoken'] = $cookies['csrftoken'];
         }
         
         return $cookies;
@@ -1138,7 +1141,7 @@ class Instagram
             set_time_limit($this->pagingTimeLimitSec);
         }
 
-        $index = 0;
+        //$index = 0;
         $accounts = [];
         $endCursor = '';
 
@@ -1167,10 +1170,10 @@ class Instagram
 
             foreach ($edgesArray as $edge) {
                 $accounts[] = $edge['node'];
-                $index++;
-                if ($index >= $count) {
-                    break 2;
-                }
+                //$index++;
+                //if ($index >= $count) {
+                //    break 2;
+                //}
             }
 
             $pageInfo = $jsonResponse['data']['user']['edge_follow']['page_info'];
